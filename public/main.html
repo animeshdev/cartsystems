@@ -1,0 +1,109 @@
+ <!DOCTYPE html>
+<html ng-app="contacts">
+<meta charset="utf-8">
+<title>Contacts</title>
+<meta name="viewport" content="width=device-width">
+
+<base href="/">
+<link rel='stylesheet' href='lib/bootstrap/dist/css/bootstrap.min.css' />
+<link rel='stylesheet' href='src/bootstrap.min.css' />
+<script src='lib/angular/angular.min.js'></script>
+<script src='lib/angular-route/angular-route.min.js'></script>
+<script src='lib/angular-resource/angular-resource.min.js'></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font: 14px/1.5 sans-serif; color: #222; margin: 3em; }
+  table, input, textarea { width: 100%; }
+  th { text-align: left; }
+  h4 { margin: 0; }
+</style>
+ <div class='row'>
+                <div class='col-sm-12' ng-include='"nav.html"'></div>
+  </div>
+<div ng-controller="Contacts">
+  <h1>Contacts</h1>
+  <div ng-view></div>
+</div>
+
+<script>
+  angular.module('contacts', ['ngResource','ngRoute'])
+  .config(function ($routeProvider, $locationProvider) {
+    // Set up our routes
+    $routeProvider
+      .when('/contact/:name', {
+        controller: 'Single',
+        templateUrl: 'single.html'
+      })
+      .when('/add', {
+        controller: 'Add',
+        templateUrl: 'add.html'
+      })
+      .when('/', {
+        controller: 'Table',
+        templateUrl: 'table.html'
+      });
+    // Use HTML5 mode (History API) when changing URL
+    $locationProvider.html5Mode(true);
+  })
+  // Setup a 'Contact' service that can be requested by any other
+  // part of the module, and then injected by Angular
+  .factory('Contact', function ($resource) {
+    return $resource('/api/contact/:name', { name: '@name.clean' } , {
+            'update': { method: 'PUT' }  } );
+  })
+  // Controllers
+  .controller('Contacts', function ($scope, $resource) {})
+  .controller('Table', function ($scope, $resource, Contact, $location, $rootScope) {
+
+    $rootScope.PAGE = "contactlist";
+    // Use the $resource query method to grab all contacts
+    $scope.contacts = Contact.query();
+
+    $scope.remove = function (idx) {
+
+          var contact = $scope.contacts[idx];
+          $scope.contact = contact;
+
+          $scope.contact.$delete(function () {
+            $scope.contacts.splice(idx, 1);
+          });
+    };
+
+
+  })
+  .controller('Single', function ($scope, $resource, $routeParams, Contact, $timeout, $location, $rootScope) {
+
+    $rootScope.PAGE = "single";
+    // Grab just a single contact
+    $scope.contact = Contact.get({ name: $routeParams.name });
+
+    // Throttle the save POST request
+    var saveTimeout;
+
+    $scope.save = function () {
+      $timeout.cancel(saveTimeout);
+      saveTimeout = $timeout(function () {
+        // Save the contact and then update the scope & URL with what came
+        // back from the server
+        console.log($scope.contact);
+        $scope.contact.$update(function (updated_contact) {
+          $scope.contact = updated_contact;
+          $location.path('/contact/' + updated_contact.name.clean).replace();
+        });
+      }, 1000);
+    };
+  
+  })
+  .controller('Add', function ($scope, $resource, Contact, $location, $rootScope) {
+    $rootScope.PAGE = "add";
+    // Create a new contact
+    $scope.contact = new Contact({});
+
+    // Save and redirect back home
+    $scope.save = function () {
+      $scope.contact.$save(function () {
+        $location.path('/');
+      });
+    };
+  });
+</script>

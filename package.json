@@ -1,0 +1,20 @@
+{
+   
+    "dependencies" : {
+        "express"       : "*",
+        "mongoose"      : "*",
+        "async"         : "*",
+        "passport"      : "*",
+        "passport-local" : "*",
+        "body-parser"    : "*",
+        "method-override" : "*",
+        "bcrypt-nodejs" : "*", 
+        "cookie-parser" : "*",
+        "express-session" :"1.5.0",
+        
+
+        "nconf"         : "*",
+        "redis"         : "*"     
+    },
+    "license": "MIT"
+}

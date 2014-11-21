@@ -1,0 +1,16 @@
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Number</th>
+    <th>Remove Contatc</th>
+  </tr>
+  <tr ng-repeat="contact in contacts">
+    <td><a href="/contact/{{contact.name.clean}}">{{contact.name.first}} {{contact.name.last}}</a></td>
+    <td>{{contact.email}}</td>
+    <td>{{contact.number}}</td>
+    <td><button ng-click="remove($index)">X</button></td>
+  </tr>
+</table>
+
+
