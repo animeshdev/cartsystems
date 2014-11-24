@@ -1,0 +1,23 @@
+<h2>New contact</h2>
+
+<table>
+  <tr>
+    <th>Size</th>
+    <th>Style</th>
+    <th>Colour</th>
+    <th>Price</th>
+  </tr>
+  <tr>
+    <td><select ng-model="tshirt.size" ng-options="size for size in sizes"></select><br></td>
+    <td><select ng-model="tshirt.style" ng-options="style for style in styles"></select><br></td>
+    <td><input ng-model="tshirt.colour"></td>
+    <td><input ng-model="tshirt.price"></td>
+  </tr>
+</table>
+
+<h4>Summary</h4>
+<textarea ng-model="tshirt.summary"></textarea>
+
+<button ng-click="save()">Save!</button>
+
+<a href="/tshirtlist">Back to list</a>

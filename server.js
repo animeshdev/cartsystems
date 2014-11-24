@@ -1,5 +1,6 @@
 var express = require('express'),
-    api     = require('./api'),
+    contact     = require('./api'),
+    tshirt     = require('./tshirt'),
     users   = require('./accounts'),
     pass = require('./config/pass'),
     app     = express();
@@ -8,16 +9,21 @@ app
 
     .use(express.static('./public'))
 
-    .use(users)
-    .all('/api/*', pass.userIsAuthenticated )
-    .use('/api', api)
+    // .use(users)
+    // .all('/api/*', pass.userIsAuthenticated )
+    // .use('/api', contact)
+
+    .use('/api', tshirt)
+    
     .get('*', function (req, res) {
 
-        if ( !req.user  ) {
-            res.redirect('/login');
-        } else {
-            res.sendfile('public/main.html');
-        }
+        res.sendfile('public/main.html');
+
+        // if ( !req.user  ) {
+        //     res.redirect('/login');
+        // } else {
+        //     res.sendfile('public/main.html');
+        // }
 
 
     })

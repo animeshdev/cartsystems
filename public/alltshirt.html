@@ -1,0 +1,16 @@
+<table>
+  <tr>
+    <th>Sku</th>
+    <th>Colour</th>
+    <th>Price</th>
+    <th>Remove Contatc</th>
+  </tr>
+  <tr ng-repeat="tshirt in tshirts">
+    <td><a href="/tshirt/{{tshirt.sku}}">{{tshirt.sku}}</a></td>
+    <td>{{tshirt.colour}}</td>
+    <td>{{tshirt.price}}</td>
+    <td><button ng-click="remove($index)">X</button></td>
+  </tr>
+</table>
+
+

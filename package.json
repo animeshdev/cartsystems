@@ -11,7 +11,7 @@
         "bcrypt-nodejs" : "*", 
         "cookie-parser" : "*",
         "express-session" :"1.5.0",
-        
+        "shortid" : "*",
 
         "nconf"         : "*",
         "redis"         : "*"     

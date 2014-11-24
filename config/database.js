@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     bcrypt = require('bcrypt-nodejs'),
+    shortId = require('shortid'),
     SALT_WORK_FACTOR = 10;
 
 var uristring = 'mongodb://localhost/cartsystem';
@@ -22,27 +23,6 @@ var User = new Schema({
   password: { type: String, required: true}
 });
 
-var Category = new Schema({
-  user_id: { type: Schema.ObjectId, ref: 'User', required: true },
-  name: { type: String, required: true }
-});
-
-var Account = new Schema({
-  user_id: { type: Schema.ObjectId, ref: 'User', required: true },
-  name: { type: String, required: true },
-  currency: { type: String, required: true },
-  balance: { type: Number, required: true },
-});
-
-var Record = new Schema({
-  account_id: { type: Schema.ObjectId, ref: 'Account', required: true },
-  user_id: { type: Schema.ObjectId, ref: 'User', required: true },
-  category: { type: String, required: true },
-  amount: { type: Number, required: true },
-  date: { type: Date, default: Date.now },
-  is_expense: { type: Boolean, default: true },
-  description: { type: String }
-});
 
 // Bcrypt middleware on UserSchema
 User.pre('save', function(next) {
@@ -103,19 +83,75 @@ contactSchema
     next();
   });
 
+
+var TshirtImageSchema = new Schema({
+    kind: {
+        type: String,
+        enum: ['thumbnail', 'detail'],
+        required: true
+    },
+    url: { type: String, required: true },
+    tshirt_id: { type: Schema.Types.ObjectId, ref: 'Tshirt' }
+});
+
+var tshirtSchema = new Schema({
+
+  // sku name we have used a shoetid generator .... 
+  // for creating unique model number
+
+  sku:    { 
+
+              type: String, require: true
+              //,unique:true
+            },
+
+  images:    [{ type: Schema.Types.ObjectId, ref: 'TshirtImg' }],
+
+  style:    { type: String, 
+              enum:  ['Casual', 'Vintage', 'Alternative'],
+              require: true 
+            },
+
+  size:     { type: Number, 
+              enum: [36, 38, 40, 42, 44, 46],
+              require: true 
+            },
+
+  colour:   { type: String },
+  price :   { type: Number, require: true },
+  summary:  { type: String },
+  modified: { type: Date, default: Date.now }    
+});
+
+// tshirtSchema.path('model').validate(function (v) {
+//     return ((v != "") && (v != null));
+// });
+
+tshirtSchema
+
+.pre('save', function (next) {
+    //if( !this.added ) this.added = new Date();
+    this.sku = shortId.generate();
+    next();
+  });
+
+
+var tshirtImageModel = mongoose.model('TshirtImg', TshirtImageSchema);
+
+var tshirtModel = mongoose.model('Tshirt', tshirtSchema);
+
 // Models
 
 var contatcModel = mongoose.model('Contact', contactSchema);
 
 var userModel = mongoose.model('User', User);
-var accountModel = mongoose.model('Account', Account);
-var recordModel = mongoose.model('Record', Record);
-var categoryModel = mongoose.model('Category', Category);
 
 
 // Export Models
 exports.userModel = userModel;
-exports.accountModel = accountModel;
-exports.recordModel = recordModel;
-exports.categoryModel = categoryModel;
+
 exports.Contact = contatcModel;
+exports.tshirtModel = tshirtModel;
+exports.tshirtImageModel = tshirtImageModel;
+
+

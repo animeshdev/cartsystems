@@ -21,8 +21,8 @@
                 <div class='col-sm-12' ng-include='"nav.html"'></div>
   </div>
 <div ng-controller="Contacts">
-  <h1>Contacts</h1>
-  <div ng-view></div>
+<!--   <h1>Cart Systems</h1>
+ -->  <div ng-view></div>
 </div>
 
 <script>
@@ -38,9 +38,30 @@
         controller: 'Add',
         templateUrl: 'add.html'
       })
-      .when('/', {
+      .when('/contactlist', {
         controller: 'Table',
         templateUrl: 'table.html'
+      })
+
+      .when('/', {
+        controller: 'Home',
+        templateUrl: 'homepage.html'
+      })
+
+
+      .when('/tshirtlist', {
+        controller: 'Tshirtlist',
+        templateUrl: 'alltshirt.html'
+      })
+
+       .when('/tshirt/:sku', {
+        controller: 'Singletshirt',
+        templateUrl: 'singletshirt.html'
+      })
+      
+      .when('/newtshirt', {
+        controller: 'Newtshirt',
+        templateUrl: 'newtshirt.html'
       });
     // Use HTML5 mode (History API) when changing URL
     $locationProvider.html5Mode(true);
@@ -51,8 +72,39 @@
     return $resource('/api/contact/:name', { name: '@name.clean' } , {
             'update': { method: 'PUT' }  } );
   })
+
+  .factory('Tshirt', function ($resource) {
+    return $resource('/api/tshirt/:sku', { sku: '@sku' } , {
+            'update': { method: 'PUT' }  } );
+  })
+
   // Controllers
+
+  .controller('Home', function ($scope, $rootScope) { $rootScope.PAGE = "home"; })
+
+  
   .controller('Contacts', function ($scope, $resource) {})
+
+  .controller('Tshirtlist', function ($scope, $resource, Tshirt, $location, $rootScope) {
+
+    $rootScope.PAGE = "tshirtlist";
+    // Use the $resource query method to grab all contacts
+    $scope.tshirts = Tshirt.query();
+
+    //console.log( $scope.tshirts);
+
+    $scope.remove = function (idx) {
+
+          var tshirt = $scope.tshirts[idx];
+          $scope.tshirt = tshirt;
+
+          $scope.tshirt.$delete(function () {
+            $scope.tshirts.splice(idx, 1);
+          });
+    };
+
+  })
+
   .controller('Table', function ($scope, $resource, Contact, $location, $rootScope) {
 
     $rootScope.PAGE = "contactlist";
@@ -68,9 +120,42 @@
             $scope.contacts.splice(idx, 1);
           });
     };
-
-
   })
+
+
+.controller('Singletshirt', function ($scope, $resource, $routeParams, Tshirt, $timeout, $location, $rootScope) {
+
+    $rootScope.PAGE = "singletshirt";
+    // Grab just a single contact
+    $scope.tshirt = Tshirt.get({ sku: $routeParams.sku });
+
+    $scope.sizes = [36, 38, 40, 42, 44, 46];
+
+    $scope.styles = ['Casual', 'Vintage', 'Alternative'];
+    //$scope.tshirt.size = 36;
+
+    // Throttle the save POST request
+    var saveTimeout;
+
+    $scope.save = function () {
+      $timeout.cancel(saveTimeout);
+      saveTimeout = $timeout(function () {
+        // Save the contact and then update the scope & URL with what came
+        // back from the server
+        $scope.tshirt.$update(function () {
+
+          // $scope.contact = updated_contact;
+          // $location.path('/contact/' + updated_contact.name.clean).replace();
+
+        });
+
+      }, 1000);
+    };
+  
+  })
+
+
+
   .controller('Single', function ($scope, $resource, $routeParams, Contact, $timeout, $location, $rootScope) {
 
     $rootScope.PAGE = "single";
@@ -94,6 +179,29 @@
     };
   
   })
+
+.controller('Newtshirt', function ($scope, $resource, Tshirt, $location, $rootScope) {
+    $rootScope.PAGE = "newtshirt";
+    // Create a new contact
+    $scope.tshirt = new Tshirt({});
+
+    $scope.sizes = [36, 38, 40, 42, 44, 46];
+    $scope.tshirt.size = 36;
+
+    $scope.styles = ['Casual', 'Vintage', 'Alternative'];
+    $scope.tshirt.style = 'Casual';
+
+    //console.log( $scope.tshirt.size ); 
+
+    // Save and redirect back home
+    $scope.save = function () {
+      $scope.tshirt.$save(function () {
+        $location.path('/tshirtlist');
+      });
+    };
+  })
+
+
   .controller('Add', function ($scope, $resource, Contact, $location, $rootScope) {
     $rootScope.PAGE = "add";
     // Create a new contact
@@ -102,7 +210,7 @@
     // Save and redirect back home
     $scope.save = function () {
       $scope.contact.$save(function () {
-        $location.path('/');
+        $location.path('/contactlist');
       });
     };
   });
