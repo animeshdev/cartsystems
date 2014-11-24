@@ -136,6 +136,22 @@ tshirtSchema
   });
 
 
+var Kart = new Schema({
+  kart : [
+      {   
+        id:     { type: String, require: true },
+        amount:   { type: Number, require: true } 
+      }
+    ],
+    user_id: { type: String, require:true},
+    created: { type: Date, default: Date.now }
+});
+
+
+var kartModel = mongoose.model('Kart', Kart);
+
+
+
 var tshirtImageModel = mongoose.model('TshirtImg', TshirtImageSchema);
 
 var tshirtModel = mongoose.model('Tshirt', tshirtSchema);
@@ -153,5 +169,7 @@ exports.userModel = userModel;
 exports.Contact = contatcModel;
 exports.tshirtModel = tshirtModel;
 exports.tshirtImageModel = tshirtImageModel;
+
+exports.kartModel = kartModel;
 
 
