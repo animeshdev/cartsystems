@@ -18,8 +18,6 @@ router
     .use(methodOverride())
     .route('/addproduct')
         .post(function (req, res) {
-
-
             var key = 'kart.' + 44;
             if ( (!req.body.sku) || (!req.body.amount)){
               res.statusCode = 404;
@@ -37,6 +35,8 @@ router
 
                     if(!err) {
                       client.hmset(key, req.body.sku, req.body.amount, function(err, result) {
+
+                          //console.log(result);  
                           if (err) {
                               console.log('Internal error(%d): %s',res.statusCode,err.message);
                               res.send('Internal error(%d): %s',res.statusCode,err.message);
@@ -54,12 +54,7 @@ router
                       res.send({ error: 'Server error' });
                     }
                   });
-
-
             }
-
-
-
             
         });
 

@@ -62,7 +62,47 @@
       .when('/newtshirt', {
         controller: 'Newtshirt',
         templateUrl: 'newtshirt.html'
-      });
+      })
+
+      // kart system
+
+        .when('/viewcart', {
+        controller: 'Viewcart',
+        templateUrl: 'viewcart.html'
+      })
+
+      .when('/storelist', {
+        controller: 'Storelist',
+        templateUrl: 'storelist.html'
+      })
+
+       .when('/tshirtdetail/:sku', {
+        controller: 'Tshirtdetail',
+        templateUrl: 'tshirtdetail.html'
+      })
+
+
+      .when('/viewcart', {
+        controller: 'Viewcart',
+        templateUrl: 'viewcart.html'
+      })
+
+      //  .when('/removecart/:sku', {
+      //   controller: 'Singletshirt',
+      //   templateUrl: 'singletshirt.html'
+      // })
+      
+      // .when('/closekart', {
+      //   controller: 'Newtshirt',
+      //   templateUrl: 'newtshirt.html'
+      // })
+
+      .when('/closekartlist', {
+        controller: 'closekartlist',
+        templateUrl: 'closekartlist.html'
+      })
+
+      ;
     // Use HTML5 mode (History API) when changing URL
     $locationProvider.html5Mode(true);
   })
@@ -80,10 +120,19 @@
 
   // Controllers
 
+
   .controller('Home', function ($scope, $rootScope) { $rootScope.PAGE = "home"; })
 
   
   .controller('Contacts', function ($scope, $resource) {})
+
+  .controller('Storelist', function ($scope, $resource, Tshirt, $location, $rootScope) {
+
+    $rootScope.PAGE = "storelist";
+    // Use the $resource query method to grab all contacts
+    $scope.tshirts = Tshirt.query();
+
+  })
 
   .controller('Tshirtlist', function ($scope, $resource, Tshirt, $location, $rootScope) {
 
@@ -91,9 +140,7 @@
     // Use the $resource query method to grab all contacts
     $scope.tshirts = Tshirt.query();
 
-    //console.log( $scope.tshirts);
-
-    $scope.remove = function (idx) {
+     $scope.remove = function (idx) {
 
           var tshirt = $scope.tshirts[idx];
           $scope.tshirt = tshirt;
@@ -122,6 +169,88 @@
     };
   })
 
+
+.controller('Viewcart', function ($scope, $resource, $routeParams, Tshirt, $http, $rootScope) {
+
+    $rootScope.PAGE = "viewcart";
+
+    $http({method: 'GET', url: 'api/viewkart'
+
+          //headers: {'Content-Type': 'application/x-www-form-urlencoded'} 
+
+      }).
+      success(function(data, status) {
+
+        $scope.prods = data;
+        
+      }).
+      error(function(data, status) {
+
+        console.log(data + status );
+              
+    });
+
+      $scope.remove = function (idx) {
+
+        // console.log(idx);
+
+        // console.log( $scope.prods );
+
+        //   var prod = $scope.prods[idx];
+
+          
+          $http({method: 'DELETE', url: 'api/removekart/'+idx 
+
+              }).
+                  success(function(data, status) {
+                    //console.log(data);
+
+                    //delete thisIsObject[key]; 
+                    delete $scope.prods[idx];
+                  }).
+                  error(function(data, status) {
+                    
+                    console.log(status);
+                });
+      }
+
+  
+  })  
+
+.controller('Tshirtdetail', function ($scope, $resource, $routeParams, Tshirt, $http, $rootScope) {
+
+    $rootScope.PAGE = "tshirtdetail";
+
+    var sku_num = $routeParams.sku
+    // Grab just a single contact
+    $scope.tshirt = Tshirt.get({ sku: sku_num });
+
+    $scope.cart_amount = 0;
+
+    $scope.addtocart = function () {
+
+      if( $scope.cart_amount >0 ){
+
+       $http({method: 'POST', url: 'api/addproduct', data: {sku:sku_num,amount:$scope.cart_amount} 
+
+          //headers: {'Content-Type': 'application/x-www-form-urlencoded'} 
+
+        }).
+            success(function(data, status) {
+              console.log(data);
+            }).
+            error(function(data, status) {
+              
+              console.log(status);
+          });
+      
+      }
+     
+    };
+
+
+  
+  })
 
 .controller('Singletshirt', function ($scope, $resource, $routeParams, Tshirt, $timeout, $location, $rootScope) {
 

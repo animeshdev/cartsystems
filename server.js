@@ -1,6 +1,7 @@
 var express = require('express'),
     contact     = require('./api'),
     tshirt     = require('./tshirt'),
+    kart     = require('./kart'),
     users   = require('./accounts'),
     pass = require('./config/pass'),
     app     = express();
@@ -9,11 +10,13 @@ app
 
     .use(express.static('./public'))
 
-    // .use(users)
+    .use(users)
     // .all('/api/*', pass.userIsAuthenticated )
     // .use('/api', contact)
 
     .use('/api', tshirt)
+
+    .use('/api', kart)
     
     .get('*', function (req, res) {
 

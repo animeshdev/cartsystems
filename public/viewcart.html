@@ -1,0 +1,13 @@
+<table>
+  <tr>
+    <th>Sku</th>
+    <th>Amount</th>
+    <th>Remove product</th>
+  </tr>
+  <tr ng-repeat="(key, value) in prods">
+  <td> {{key}} </td> <td> {{ value }} </td>
+  <td><button ng-click="remove(key)">X</button></td>
+</tr>
+</table>
+
+
