@@ -3,3 +3,15 @@
 	My Username : {{user_name}}
 	My Role {{user_role}}
 </div>
+<table>
+  <tr>
+    <th>Sku</th>
+    <th>Colour</th>
+    <th>Price</th>
+  </tr>
+  <tr ng-repeat="tshirt in tshirts">
+    <td><a href="/tshirtdetail/{{tshirt.sku}}">{{tshirt.sku}}</a></td>
+    <td>{{tshirt.colour}}</td>
+    <td>{{tshirt.price}}</td>
+  </tr>
+</table>

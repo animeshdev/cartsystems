@@ -74,36 +74,43 @@ router
         function(callback) {
 
             var productsToKart = [];
+
             client.hgetall("kart.44", function(err, products) {
                 if(!err && products ) {
-                    for(var key in products) {
-                      var product = {
-                        id : key,
-                        amount: products[key]
-                      };
-                      productsToKart.push(product);
-                    }
+
+
+                  for(var key in products) {
+                        var product = {
+                          id : key,
+                          amount: products[key]
+                        };
+                        productsToKart.push(product);
+                  }
+
 
                     var kart = new Kart({
                       user_id: 44,
-                      kart: productsToKart
-                    });
+                      kartlist: productsToKart
+                    }).toObject();
+                    delete kart._id;;
 
-
-                    kart.save(function(err) {
-                      if(!err) {
-                        console.log("Kart " + kart.id + " created");
+                    Kart.update({user_id: 44}, kart, {upsert: true}, function (err, contact) {
+                    if(!err) {
+                        console.log("Kart " + contact.id + " created");
                         client.expire('kart.'+44, 1);
                       
                       } 
                       else {
 
-                        console.log( 'errror occured while saving in cart db' );
+                        client.expire('kart.'+44, 1);
+                        console.log( 'errror occured while saving in cart db xxx' );
                         
                       }  
+                   
+                  });
 
-                    });
 
+                   
                   } else {
 
                      console.log( 'either error or product not found in redis' );

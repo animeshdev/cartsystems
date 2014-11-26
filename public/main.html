@@ -10,6 +10,7 @@
 <script src='lib/angular/angular.min.js'></script>
 <script src='lib/angular-route/angular-route.min.js'></script>
 <script src='lib/angular-resource/angular-resource.min.js'></script>
+<script src='lib/moment/min/moment.min.js'></script>
 <style>
   * { box-sizing: border-box; }
   body { font: 14px/1.5 sans-serif; color: #222; margin: 3em; }
@@ -75,15 +76,15 @@
         templateUrl: 'viewcart.html'
       })
 
-      //  .when('/removecart/:sku', {
-      //   controller: 'Singletshirt',
-      //   templateUrl: 'singletshirt.html'
-      // })
+       .when('/allhotitem', {
+        controller: 'Hotlist',
+        templateUrl: 'storelist.html'
+      })
       
-      // .when('/closekart', {
-      //   controller: 'Newtshirt',
-      //   templateUrl: 'newtshirt.html'
-      // })
+      .when('/findhot', {
+        controller: 'Findhot',
+        templateUrl: 'storelist.html'
+      })
 
       .when('/closekartlist', {
         controller: 'closekartlist',
@@ -108,6 +109,14 @@
 
   // Controllers
 
+  // .controller('Hotlist', function ($scope, $rootScope,$http) { 
+
+  //     $rootScope.PAGE = "hotlist";
+
+         
+  // })
+
+
 
   .controller('Home', function ($scope, $rootScope,$http) { 
 
@@ -127,6 +136,17 @@
               console.log(status);
           });
       }
+
+       $http({ method: 'GET', url: 'api/hotitems' }).
+            success(function(data, status) {
+
+             $scope.tshirts = data;
+
+            }).
+            error(function(data, status) {
+              
+              console.log(status);
+       });
 
   })
 
@@ -188,7 +208,9 @@
       }).
       success(function(data, status) {
 
-        $scope.prods = data;
+        console.log( angular.fromJson(data) );
+
+        $scope.prods = angular.fromJson(data);
         
       }).
       error(function(data, status) {
@@ -230,9 +252,20 @@
 
     var sku_num = $routeParams.sku
     // Grab just a single contact
-    $scope.tshirt = Tshirt.get({ sku: sku_num });
+    //$scope.tshirt = Tshirt.get({ sku: sku_num });
 
-    $scope.cart_amount = 0;
+     $http({method: 'GET', url: 'api/getprod/'+sku_num }).
+      success(function(data, status) {
+       
+          $scope.tshirt = data;
+
+      }).
+      error(function(data, status) {
+        
+        console.log(status);
+    });
+
+    $scope.cart_amount = 1;
 
     $scope.addtocart = function () {
 

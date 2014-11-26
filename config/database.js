@@ -135,7 +135,7 @@ tshirtSchema
 
 
 var kartSchema = new Schema({
-  kart : [
+  kartlist : [
       {   
         id:     { type: String, require: true },
         amount:   { type: Number, require: true } 
@@ -145,6 +145,13 @@ var kartSchema = new Schema({
     created: { type: Date, default: Date.now }
 });
 
+
+var washotSchema = new Schema({
+  tshirt_id   : { type: String, require: true },
+    created   : { type: Date, default: Date.now }
+});
+
+var washotModel = mongoose.model('WasHot', washotSchema);
 
 var kartModel = mongoose.model('Kart', kartSchema);
 
@@ -169,5 +176,7 @@ exports.tshirtModel = tshirtModel;
 exports.tshirtImageModel = tshirtImageModel;
 
 exports.kartModel = kartModel;
+exports.washotModel = washotModel;
+
 
 
