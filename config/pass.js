@@ -36,5 +36,8 @@ exports.userIsAuthenticated = function userIsAuthenticated(req, res, next) {
 
 //TODO Create autorization (middleware ?).
 exports.userIsAutorized = function userIsAutorized(objectUserId) {
-  return (req.user._id == objectUserId);
+  if (req.user.role == 'admin') { return next(); }
+
+  res.send(401);
+
 }

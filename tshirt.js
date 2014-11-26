@@ -50,6 +50,10 @@ router
 
         .put(function (req, res) {
 
+          if (req.user.role != 'admin') { return res.send(401); }
+
+  
+
                 var locals = {};
                 var sku = req.params.sku;
                 var tshirtId; //Define userId o
@@ -89,6 +93,8 @@ router
 
         })
         .delete(function (req, res) {
+
+          if (req.user.role != 'admin') { return res.send(401); }
 
             Tshirt
               .remove({ 'sku': req.params.sku  } , function (err) {

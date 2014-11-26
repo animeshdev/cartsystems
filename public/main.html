@@ -30,19 +30,7 @@
   .config(function ($routeProvider, $locationProvider) {
     // Set up our routes
     $routeProvider
-      .when('/contact/:name', {
-        controller: 'Single',
-        templateUrl: 'single.html'
-      })
-      .when('/add', {
-        controller: 'Add',
-        templateUrl: 'add.html'
-      })
-      .when('/contactlist', {
-        controller: 'Table',
-        templateUrl: 'table.html'
-      })
-
+      
       .when('/', {
         controller: 'Home',
         templateUrl: 'homepage.html'
@@ -121,7 +109,26 @@
   // Controllers
 
 
-  .controller('Home', function ($scope, $rootScope) { $rootScope.PAGE = "home"; })
+  .controller('Home', function ($scope, $rootScope,$http) { 
+
+      $rootScope.PAGE = "home";
+
+      if( !$rootScope.user_role ) {
+
+          $http({ method: 'GET', url: 'api/myrole' }).
+            success(function(data, status) {
+
+              $rootScope.user_role = data.role;
+              $rootScope.user_name  = data.username;
+
+            }).
+            error(function(data, status) {
+              
+              console.log(status);
+          });
+      }
+
+  })
 
   
   .controller('Contacts', function ($scope, $resource) {})

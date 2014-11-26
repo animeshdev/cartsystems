@@ -13,9 +13,16 @@ var express    = require('express'),
     client = redis.createClient();
 
 router
+.route('/myrole')
+    .get(function (req, res) {
+        
+        res.send( {'role':req.user.role , 'username':req.user.username }  );   
+    });
+router
    
     .use(bodyParser.json())
     .use(methodOverride())
+
     .route('/addproduct')
         .post(function (req, res) {
             var key = 'kart.' + 44;
@@ -63,18 +70,69 @@ router
 
         .get(function (req, res) {
 
+                var result = {};
+
                   client.hgetall("kart.44", function(err, objs) {
-                    if(!objs) {
-                        res.statusCode = 404;
-                        return res.send({ error: 'Not cart yet!!' });
-                      } 
-                    if(!err) {
-                        res.send(objs);
-                      } else {
-                        res.statusCode = 500;
-                        console.log('Internal error(%d): %s',res.statusCode,err.message);
-                        res.send({ error: 'Server error' });
+
+                    async.series([
+                        //Load user to get userId first
+                        function(callback) {
+
+                          if(err) {
+                            res.statusCode = 500;
+                            console.log('Internal error(%d): %s',res.statusCode,err.message);
+                            res.send({ error: 'Server error' });
+                          }
+
+                          if(!objs) {
+                              Kart
+                              .findOne({ 'user_id': 44  } )
+                              .exec(function (err, kart) {
+
+
+                                if( err ) return res.send(500, err);
+
+                                if( !kart ) 
+                                  {  
+                                    res.statusCode = 404;
+                                     res.send( { error: 'Not cart yet!!' } );
+                                  }
+
+                                console.log( kart );
+
+                                //kart.kart);
+                            });
+
+
+                         }else {
+
+                          result = objs;
+                         } 
+
+                          callback();
+
+
+                      },
+
+                      function(callback) {
+
+                        
+
+                        callback();
                       }
+                    ], function(err) { 
+                        if (err) return next(err);
+                        
+                        res.send(objs);
+                    });
+
+
+                    
+
+                     
+
+
+
                     
                   });
         });

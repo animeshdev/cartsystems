@@ -20,7 +20,8 @@ var Schema = mongoose.Schema;
 // User schema
 var User = new Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true}
+  password: { type: String, required: true},
+  role: { type: String, default: 'user' }
 });
 
 
@@ -123,9 +124,6 @@ var tshirtSchema = new Schema({
   modified: { type: Date, default: Date.now }    
 });
 
-// tshirtSchema.path('model').validate(function (v) {
-//     return ((v != "") && (v != null));
-// });
 
 tshirtSchema
 
@@ -136,7 +134,7 @@ tshirtSchema
   });
 
 
-var Kart = new Schema({
+var kartSchema = new Schema({
   kart : [
       {   
         id:     { type: String, require: true },
@@ -148,7 +146,7 @@ var Kart = new Schema({
 });
 
 
-var kartModel = mongoose.model('Kart', Kart);
+var kartModel = mongoose.model('Kart', kartSchema);
 
 
 

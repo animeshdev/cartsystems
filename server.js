@@ -11,7 +11,7 @@ app
     .use(express.static('./public'))
 
     .use(users)
-    // .all('/api/*', pass.userIsAuthenticated )
+     .all('/api/*', pass.userIsAuthenticated )
     // .use('/api', contact)
 
     .use('/api', tshirt)
@@ -20,13 +20,13 @@ app
     
     .get('*', function (req, res) {
 
-        res.sendfile('public/main.html');
+        //res.sendfile('public/main.html');
 
-        // if ( !req.user  ) {
-        //     res.redirect('/login');
-        // } else {
-        //     res.sendfile('public/main.html');
-        // }
+        if ( !req.user  ) {
+            res.redirect('/login');
+        } else {
+            res.sendfile('public/main.html');
+        }
 
 
     })
