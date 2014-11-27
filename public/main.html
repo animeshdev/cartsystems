@@ -83,7 +83,7 @@
       
       .when('/findhot', {
         controller: 'Findhot',
-        templateUrl: 'storelist.html'
+        templateUrl: 'findhot.html'
       })
 
       .when('/closekartlist', {
@@ -116,20 +116,20 @@
          
   // })
 
- .controller('Home', function ($scope, $rootScope,$http) { 
+ .controller('Findhot', function ($scope, $rootScope,$http) { 
 
-      $rootScope.PAGE = "hotfind";
+      $rootScope.PAGE = "findhot";
 
        //    .route('/hotitems/:yearstart/:monthstart/:daystart/:yearend/:monthend/:dayend')
 
 
-       var params = ['api/hotitems',20];
+       var params = ['api/hotitems',2014,11,10,2014,11,28].join('/');
  
 
-     $http({method: 'GET', url: 'api/getprod/'+sku_num }).
+     $http({method: 'GET', url: params }).
       success(function(data, status) {
        
-          $scope.tshirt = data;
+          $scope.tshirts = data;
 
       }).
       error(function(data, status) {
@@ -138,7 +138,7 @@
     });
 
 
-}); 
+})
 
   .controller('Home', function ($scope, $rootScope,$http) { 
 

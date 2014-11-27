@@ -148,7 +148,14 @@ var kartSchema = new Schema({
 
 var washotSchema = new Schema({
   tshirt_id   : { type: String, require: true },
-    created   : { type: Date, default: Date.now }
+    created   : { type: Date }
+});
+
+washotSchema.pre('save', function(next){
+
+  if( !this.created ) this.created = new Date();
+  
+  next();
 });
 
 var washotModel = mongoose.model('WasHot', washotSchema);

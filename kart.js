@@ -2,6 +2,8 @@ var express    = require('express'),
     bodyParser = require('body-parser'),
     methodOverride = require('method-override'),
    db = require('./config/database'),
+   utilhelp = require('./config/utility'),
+
    async = require('async'),
   router     = express.Router();
   var Tshirt = db.tshirtModel;
@@ -166,7 +168,7 @@ router
                                      res.send( { error: 'Not cart yet!!' } );
                                   } else {
 
-                                       console.log( kart );
+                                       
                                         var arr = kart.kartlist;
                                         var rv = {};
                                         var result = [];
@@ -349,14 +351,14 @@ function processhotlist(replies,res){
                   .findOne({ 'sku': item  }, { _id: 0 })
                   .exec(function (err, tshirt) {
                 if (err) {
-                  console.log("Hot Tshirt Not Found");
+                  //console.log("Hot Tshirt Not Found");
                   res.statusCode = 500;
                   console.log('Internal error(%d): %s',res.statusCode,err.message);
                   return res.send({ error: 'Server error' });
                 }
                 else {
                   hotTshirts.push(tshirt);
-                  console.log("hotTshirts add");
+                  //console.log("hotTshirts add");
                 }
               });
               // Async call is done, alert via callback
@@ -383,7 +385,7 @@ function processhotlist(replies,res){
         async.parallel(asyncTasks, function(){
           // All tasks are done now
           //doSomethingOnceAllAreDone();
-          console.log(hotTshirts);
+          //console.log(hotTshirts);
           res.send(hotTshirts);
         });
 }    
@@ -391,9 +393,13 @@ function processhotlist(replies,res){
 router
 
     .route('/hotitems/:yearstart/:monthstart/:daystart/:yearend/:monthend/:dayend')
+
     .get( function(req, res){
 
     console.log("GET - /washot");
+ 
+
+
     var date = new Date();
     if (((req.params.monthstart < 1) || (req.params.monthstart > 12)) || ((req.params.monthend < 1) || (req.params.monthend > 12)))
     {
@@ -468,10 +474,30 @@ router
       return res.send("Day end shouldn't be smaller than day start");
     }
 
-    var dateStart = new Date(req.params.yearstart, req.params.monthstart, req.params.daystart);
-    var dateEnd = new Date(req.params.yearend, req.params.monthend, req.params.dayend);
 
-    WasHot.find({created : {"$gte" : dateStart, "$lt" : dateEnd }}, function (err, washots) {
+    // console.log(req.params.daystart);
+    // console.log(req.params.dayend);
+
+
+    // var dateStart = new Date(req.params.yearstart, req.params.monthstart, req.params.daystart) ;
+    // var dateEnd =  new Date(req.params.yearend, req.params.monthend, req.params.dayend) ;
+
+
+    var dayst = req.params.daystart + 'T00:00:00Z';
+    var dayed = req.params.dayend + 'T00:00:00Z';
+
+    // // "2013-09-15T00:00:00Z" 
+
+    // convert date to isostring that mongo understand
+
+    var dateStart = new Date( req.params.yearstart +'-'+ req.params.monthstart + '-' + dayst );
+
+    var dateEnd = new Date( req.params.yearend +'-'+ req.params.monthend + '-' + dayed );
+
+
+
+    var cond = {created : {"$gte" : dateStart, "$lt" : dateEnd }};
+    WasHot.find( cond ,  function (err, washots) {
       if (washots.length == 0) {
         console.log("No find washots");
         res.statusCode = 404;
